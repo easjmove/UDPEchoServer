@@ -16,12 +16,18 @@ namespace UDPEchoServer
             //Binds is kinda like a TcpListener, we start listening for incoming UDP packets on port 65000
             socket.Client.Bind(new IPEndPoint(IPAddress.Any, 65000));
 
+            //Keeps listening for packets forever, or until the console is closed
             while (true)
             {
                 //define an Endpoint which we will use to store the Endpoint of the client
                 IPEndPoint from = null;
                 //Read data from a client, waits here until a client sends data
                 byte[] data = socket.Receive(ref from);
+
+                //we don't start another thread to handle the data, because the UDP protocol is not connection oriented
+                //that means that one client doesn't block the server from receiving another packet
+                //only in the case that the handling of the client takes some time, should we start another thread
+
                 //Converts the bytes to a string using the UTF8 encoding, the encoding method should be the same on client and server
                 string dataString = Encoding.UTF8.GetString(data);
                 Console.WriteLine("Received from client: " + dataString + " - " + from.Address);
